@@ -11,8 +11,6 @@
   ],
   "dependencies": {
     "com.unity.nuget.newtonsoft-json": "3.2.1",
-    "com.mikeschweitzer.websocket": "2.0.3",
-    "com.cysharp.unitask": "2.5.10"
   },
   "license": "Apache License 2.0",
   "licensesUrl": "https://github.com/ayutaz/UniRealtime/blob/main/LICENSE"
