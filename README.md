@@ -80,3 +80,5 @@ uni-realtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統
 
 # License
 このプロジェクトはApache-2.0ライセンスの条件下で提供されています。詳細はLICENSEファイルを参照してください。
+
+ただしサンプルシーンに使用しているFontは、[Google Fonts](https://fonts.google.com/)の[NotoSansJP](https://fonts.google.com/noto/specimen/Noto+Sans+JP)を使用しています。Noto Sans JPは[ASIL Open Font License, Version 1.1](https://openfontlicense.org/open-font-license-official-text/)の下で提供されています。
