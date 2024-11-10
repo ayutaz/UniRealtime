@@ -48,7 +48,7 @@ uni-realtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統
 2. 左上にある + ボタンをクリックし、「git URLからパッケージを追加」を選択します。
 3. 以下のURLを入力し、Addをクリックします。
 ```sh
-https://github.com/ayutaz/uni-realtime?path=Assets/UniRealtime/Scripts
+https://github.com/ayutaz/UniRealtime?path=Assets/UniRealtime/Scripts
 ```
 
 ## Unity Package
