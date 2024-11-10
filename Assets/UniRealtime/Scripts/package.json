@@ -10,7 +10,7 @@
     "RealtimeAPI"
   ],
   "dependencies": {
-    "com.unity.nuget.newtonsoft-json": "3.2.1",
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
   },
   "license": "Apache License 2.0",
   "licensesUrl": "https://github.com/ayutaz/UniRealtime/blob/main/LICENSE"
