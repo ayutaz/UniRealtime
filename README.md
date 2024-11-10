@@ -32,6 +32,10 @@ uni-realtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統
 3. `Assets/UniRealtime/Sample/Scenes` にあるRealtimeAIDemoシーンを開きます。
 4. OpenAIのAPIキーをプロジェクト内で設定します。
 
+実行することで以下の画像のように動作します。
+
+![](Docs/sampleSceneImage.png)
+
 # 対応するOpenAIのAPI機能
 * Text & Audio Input/Output: テキストと音声の入出力に対応し、インタラクティブな音声会話を実現。
 * Function Calls: AIモデルによるリアルタイムの関数実行機能。
