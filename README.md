@@ -43,17 +43,25 @@ uni-realtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統
 
 # ライブラリとしての使用方法
 
+## 依存ライブラリのインストール
+
 ## Unity Package Manager (UPM)
-1. Unityのパッケージマネージャを開きます。
-2. 左上にある + ボタンをクリックし、「git URLからパッケージを追加」を選択します。
-3. 以下のURLを入力し、Addをクリックします。
-```sh
-https://github.com/ayutaz/UniRealtime?path=Assets/UniRealtime/Scripts
+`Packages/manifest.json` に以下の依存関係を追加します。
+
+```json
+{
+  "dependencies": {
+    "com.cysharp.unitask": "2.0.0",
+    "com.mikerochip.unity-websocket": "1.0.0",
+    "com.unity.uni-realtime": "0.1.0"
+  }
+}
 ```
 
 ## Unity Package
-1. リリースページから最新のUnityパッケージをダウンロードします。
-2. ダウンロードしたUnityパッケージをプロジェクトにインポートします。
+1. UniTaskおよびunity-websocketをインストールします。
+2. リリースページから最新のUnityパッケージをダウンロードします。
+3. ダウンロードしたUnityパッケージをプロジェクトにインポートします。
 
 # 動作環境
 * Unity: 2021.3.14f1 以降
