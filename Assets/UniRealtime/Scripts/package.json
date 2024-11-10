@@ -1,0 +1,17 @@
+﻿{
+  "name": "jp.ayutaz.uni-realtime",
+  "displayName": "UniRealtime",
+  "version": "0.1.0",
+  "unity": "2023.3",
+  "description": "OpenAI's realtime api for Unity",
+  "keywords": [
+    "OpenAI",
+    "Unity",
+    "RealtimeAPI"
+  ],
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  },
+  "license": "Apache License 2.0",
+  "licensesUrl": "https://github.com/ayutaz/UniRealtime/blob/main/LICENSE"
+}

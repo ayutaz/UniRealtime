@@ -1,0 +1,17 @@
+{
+    "name": "UniRealtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ec04f0f3ab74a4ab6a7355917322ba3e",
+        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
