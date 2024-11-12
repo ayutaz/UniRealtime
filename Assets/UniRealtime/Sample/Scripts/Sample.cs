@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using MikeSchweitzer.WebSocket;
@@ -40,9 +41,9 @@ namespace UniRealtime.Sample
         private int _lastSamplePosition = 0;
 
         /// <summary>
-        /// 音声データのバッファ
+        /// 音声データのバッファを float 型のスレッドセーフなキューに変更
         /// </summary>
-        private readonly List<byte> _audioBuffer = new List<byte>();
+        private readonly ConcurrentQueue<float> _audioBuffer = new ConcurrentQueue<float>();
 
         /// <summary>
         /// 音声の入力に関するクラス
@@ -73,6 +74,10 @@ namespace UniRealtime.Sample
         /// </summary>
         private async void Start()
         {
+            // マイクの設定
+            audioSource.loop = true;
+            audioSource.Play();
+
             // Realtime APIに接続
             await _openAIRealtimeClient.ConnectToRealtimeAPI(_cancellationTokenSource.Token);
 
@@ -119,6 +124,41 @@ namespace UniRealtime.Sample
         }
 
         /// <summary>
+        /// 音声データを取得するためのメソッド
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="channels"></param>
+        private void OnAudioFilterRead(float[] data, int channels)
+        {
+            if (_audioBuffer == null) return;
+
+            for (int i = 0; i < data.Length; i += channels)
+            {
+                float sample;
+                if (_audioBuffer.TryDequeue(out sample))
+                {
+                    data[i] = sample;
+
+                    // ステレオ対応
+                    if (channels == 2)
+                    {
+                        data[i + 1] = sample;
+                    }
+                }
+                else
+                {
+                    // バッファが空の場合は無音にする
+                    data[i] = 0;
+
+                    if (channels == 2)
+                    {
+                        data[i + 1] = 0;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// メッセージを受信したときに呼び出されるメソッド
         /// </summary>
         /// <param name="response"></param>
@@ -149,13 +189,45 @@ namespace UniRealtime.Sample
                     }
                     break;
                 case ResponseType.ResponseAudioDelta:
-                    _audioBuffer.AddRange(response.AudioData);
+                    // 受信した音声データ（PCM16 データ）をデコードしてバッファに追加
+                    byte[] pcmData = response.AudioData;
+
+                    // 入力サンプル数を計算
+                    int inputSampleCount = pcmData.Length / 2;
+                    float[] inputSamples = new float[inputSampleCount];
+
+                    // バイト配列をfloat配列に変換（正規化）
+                    for (int i = 0; i < inputSampleCount; i++)
+                    {
+                        // リトルエンディアンの場合
+                        short sample = BitConverter.ToInt16(pcmData, i * 2);
+
+                        // short の最大値で割って -1.0f ～ 1.0f に正規化
+                        inputSamples[i] = sample / (float)short.MaxValue;
+                    }
+
+                    // Unity のサンプリングレートを取得
+                    int unitySampleRate = AudioSettings.outputSampleRate;
+
+                    // 入力データのサンプリングレートに合わせてリサンプリング
+                    // DOCS: https://platform.openai.com/docs/guides/realtime#audio-formats
+                    // raw 16 bit PCM audio at 24kHz, 1 channel, little-endian
+                    int inputSampleRate = 24000;
+
+                    // リサンプリングの比率を計算
+                    float resampleRatio = (float)unitySampleRate / inputSampleRate;
+
+                    // リサンプリングを行う
+                    float[] resampledSamples = AudioUtility.ResampleAudio(inputSamples, resampleRatio);
+
+                    // バッファに追加
+                    foreach (var sample in resampledSamples)
+                    {
+                        _audioBuffer.Enqueue(sample);
+                    }
                     break;
                 case ResponseType.ResponseAudioDone:
-                    // 音声データを再生
-                    audioSource.PlayAudioFromBytes(_audioBuffer.ToArray());
-                    // バッファをクリア
-                    _audioBuffer.Clear();
+                    // 何もしない
                     break;
                 case ResponseType.ResponseDone: break;
                 case ResponseType.InputAudioBufferSpeechStarted: break;
