@@ -45,18 +45,10 @@ uni-realtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統
 
 ## 依存ライブラリのインストール
 
-## Unity Package Manager (UPM)
-`Packages/manifest.json` に以下の依存関係を追加します。
-
-```json
-{
-  "dependencies": {
-    "com.cysharp.unitask": "2.0.0",
-    "com.mikerochip.unity-websocket": "1.0.0",
-    "com.unity.uni-realtime": "0.1.0"
-  }
-}
-```
+## Package Manager
+1. Package Managerを開きます。
+2. `+` ボタンをクリックし、`Add package from git URL` を選択します。
+3. `https://github.com/ayutaz/UniRealtime.git?path=/Assets/UniRealtime/Scripts`
 
 ## Unity Package
 1. UniTaskおよびunity-websocketをインストールします。
@@ -80,3 +72,5 @@ uni-realtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統
 
 # License
 このプロジェクトはApache-2.0ライセンスの条件下で提供されています。詳細はLICENSEファイルを参照してください。
+
+ただしサンプルシーンに使用しているFontは、[Google Fonts](https://fonts.google.com/)の[NotoSansJP](https://fonts.google.com/noto/specimen/Noto+Sans+JP)を使用しています。Noto Sans JPは[ASIL Open Font License, Version 1.1](https://openfontlicense.org/open-font-license-official-text/)の下で提供されています。
