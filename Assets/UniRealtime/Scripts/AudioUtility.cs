@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UniRealtime
 {
@@ -45,6 +46,39 @@ namespace UniRealtime
             }
 
             return floatData;
+        }
+
+        /// <summary>
+        /// オーディオデータのリサンプリング
+        /// </summary>
+        /// <param name="inputSamples"></param>
+        /// <param name="resampleRatio"></param>
+        /// <returns></returns>
+        public static float[] ResampleAudio(float[] inputSamples, float resampleRatio)
+        {
+            int inputLength = inputSamples.Length;
+            int outputLength = Mathf.CeilToInt(inputLength * resampleRatio);
+            float[] outputSamples = new float[outputLength];
+
+            for (int i = 0; i < outputLength; i++)
+            {
+                float srcIndex = i / resampleRatio;
+                int srcIndexInt = (int)srcIndex;
+                float frac = srcIndex - srcIndexInt;
+
+                if (srcIndexInt + 1 < inputLength)
+                {
+                    // 線形補間
+                    float sample = Mathf.Lerp(inputSamples[srcIndexInt], inputSamples[srcIndexInt + 1], frac);
+                    outputSamples[i] = sample;
+                }
+                else
+                {
+                    outputSamples[i] = inputSamples[inputLength - 1];
+                }
+            }
+
+            return outputSamples;
         }
     }
 }
