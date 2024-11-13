@@ -62,9 +62,15 @@ namespace UniRealtime
         /// <summary>
         ///  Realtime APIに接続
         /// </summary>
+#if UNIREALTIME_SUPPORT_UNITASK
+        public async UniTask ConnectToRealtimeAPI(CancellationToken cancellationToken = default, string instructions = "あなたは優秀はアシスタントです。",
+            Modalities[] modalities = null, string headerKey = "OpenAI-Beta",
+            string headerValue = "realtime=v1", int maxReceiveMbValue = 1024 * 1024 * 5, int maxSendBytes = 1024 * 1024 * 5)
+#else
         public async Task ConnectToRealtimeAPI(CancellationToken cancellationToken = default, string instructions = "あなたは優秀はアシスタントです。",
             Modalities[] modalities = null, string headerKey = "OpenAI-Beta",
             string headerValue = "realtime=v1", int maxReceiveMbValue = 1024 * 1024 * 5, int maxSendBytes = 1024 * 1024 * 5)
+#endif
         {
             string url = $"wss://api.openai.com/v1/realtime?model={_modelName}";
 
