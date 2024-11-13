@@ -1,16 +1,22 @@
-# uni-realtime
+# UniRealtime
 
-uni-realtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統合し、インタラクティブな音声およびテキストベースの対話を実現するためのライブラリです。このライブラリを使えば、低遅延でマルチモーダルなキャラクター対話や、リアルタイムでのAI応答をスムーズに実装できます。
+[![Unity Version](https://img.shields.io/badge/Unity-2022.3%2B-blueviolet?logo=unity)](https://unity.com/releases/editor/archive)
+[![Releases](https://img.shields.io/github/release/ayutaz/UniRealtime.svg)](https://github.com/ayutaz/UniRealtime/releases)
+
+日本語 | [English](README_EN.md)
+
+UniRealtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統合し、インタラクティブな音声およびテキストベースの対話を実現するためのライブラリです。このライブラリを使えば、低遅延でマルチモーダルなキャラクター対話や、リアルタイムでのAI応答をスムーズに実装できます。
 
 サンプルシーンを含んでいるため、クローンしてすぐに動作を確認できます。また、ライブラリとしてプロジェクトに組み込むことも可能です。
 
 <!-- TOC -->
-* [uni-realtime](#uni-realtime)
+* [UniRealtime](#unirealtime)
 * [機能概要](#機能概要)
 * [サンプルプロジェクトのセットアップ](#サンプルプロジェクトのセットアップ)
 * [対応するOpenAIのAPI機能](#対応するopenaiのapi機能)
 * [ライブラリとしての使用方法](#ライブラリとしての使用方法)
-  * [Unity Package Manager (UPM)](#unity-package-manager-upm)
+  * [依存ライブラリのインストール](#依存ライブラリのインストール)
+  * [Package Manager](#package-manager)
   * [Unity Package](#unity-package)
 * [動作環境](#動作環境)
 * [依存関係](#依存関係)
