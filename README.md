@@ -3,7 +3,7 @@
 [![Unity Version](https://img.shields.io/badge/Unity-2022.3%2B-blueviolet?logo=unity)](https://unity.com/releases/editor/archive)
 [![Releases](https://img.shields.io/github/release/ayutaz/UniRealtime.svg)](https://github.com/ayutaz/UniRealtime/releases)
 
-![README for EN](README_EN.md)
+日本語 | [English](README_EN.md)
 
 UniRealtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統合し、インタラクティブな音声およびテキストベースの対話を実現するためのライブラリです。このライブラリを使えば、低遅延でマルチモーダルなキャラクター対話や、リアルタイムでのAI応答をスムーズに実装できます。
 

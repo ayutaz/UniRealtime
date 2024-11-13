@@ -3,6 +3,8 @@
 [![Unity Version](https://img.shields.io/badge/Unity-2022.3%2B-blueviolet?logo=unity)](https://unity.com/releases/editor/archive)
 [![Releases](https://img.shields.io/github/release/ayutaz/UniRealtime.svg)](https://github.com/ayutaz/UniRealtime/releases)
 
+[日本語](README.md) | English
+
 UniRealtime is a library that makes it easy to integrate OpenAI's Realtime API into your Unity project, enabling interactive voice and text-based conversations. With this library, you can smoothly implement low-latency, multimodal character interactions and real-time AI responses.
 
 The repository includes sample scenes that can be cloned and run immediately, and the library can also be integrated into your project as a standalone component.
