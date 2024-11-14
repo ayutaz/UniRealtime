@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Threading;
 using MikeSchweitzer.WebSocket;
 using TMPro;
+using UniRealtime.OpenAI.Request;
+using UniRealtime.Response;
 using UnityEngine;
 
 namespace UniRealtime.Sample
@@ -24,6 +26,11 @@ namespace UniRealtime.Sample
         /// 入力した音声を表示するTextMeshProUGUI
         /// </summary>
         [SerializeField] private TextMeshProUGUI inputText;
+
+        /// <summary>
+        /// 音声の選択
+        /// </summary>
+        [SerializeField] private Voice _selectVoice;
 
         /// <summary>
         /// 音声を再生するAudioSource
@@ -82,7 +89,54 @@ namespace UniRealtime.Sample
             await _openAIRealtimeClient.ConnectToRealtimeAPI(_cancellationTokenSource.Token);
 
             // 入力した音声の文字起こし情報も取得する場合
-            _openAIRealtimeClient.SendSessionUpdate();
+            var sessionUpdateMessage = new SessionUpdateMessage
+            {
+                EventId = "",
+                Type = "session.update",
+                Session = new SessionDetails
+                {
+                    Modalities = new List<string> { Modalities.Text.ToString().ToLower(), Modalities.Audio.ToString().ToLower() },
+                    Instructions = "あなたは優秀なアシスタントです。",
+                    Voice = _selectVoice,
+                    // pcm16, g711_ulaw, or g711_alaw
+                    InputAudioFormat = AudioFormat.PCM16,
+                    // pcm16, g711_ulaw, or g711_alaw
+                    OutputAudioFormat = AudioFormat.PCM16,
+                    InputAudioTranscription = new InputAudioTranscription
+                    {
+                        Model = "whisper-1"
+                    },
+                    TurnDetection = new TurnDetection
+                    {
+                        Type = "server_vad",
+                        Threshold = 0.5,
+                        PrefixPaddingMs = 300,
+                        SilenceDurationMs = 500
+                    },
+                    Tools = new List<Tool>
+                    {
+                        new Tool
+                        {
+                            Type = "function",
+                            Name = "get_weather",
+                            Description = "Get the current weather for a location, tell the user you are fetching the weather.",
+                            Parameters = new ToolParameters
+                            {
+                                Type = "object",
+                                Properties = new Dictionary<string, ToolProperty>
+                                {
+                                    { "location", new ToolProperty { Type = "string" } }
+                                },
+                                Required = new List<string> { "location" }
+                            }
+                        }
+                    },
+                    ToolChoice = "auto",
+                    Temperature = 0.8,
+                    MaxResponseOutputTokens = "inf"
+                }
+            };
+            _openAIRealtimeClient.SendSessionUpdate(sessionUpdateMessage);
         }
 
         /// <summary>

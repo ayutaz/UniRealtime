@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using MikeSchweitzer.WebSocket;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UniRealtime.OpenAI.Request;
+using UniRealtime.Response;
 using UnityEngine;
 #if UNIREALTIME_SUPPORT_UNITASK
 using Cysharp.Threading.Tasks;
@@ -142,24 +144,12 @@ namespace UniRealtime
         /// <summary>
         ///     セッションの更新を送信
         /// </summary>
-        public void SendSessionUpdate(string modelName = "whisper-1")
+        public void SendSessionUpdate(SessionUpdateMessage sessionUpdateMessage)
         {
-            var sessionUpdateMessage = new
-            {
-                type = "session.update",
-                session = new
-                {
-                    input_audio_transcription = new
-                    {
-                        model = modelName
-                    }
-                }
-            };
-
             string jsonMessage = JsonConvert.SerializeObject(sessionUpdateMessage);
             _connection.AddOutgoingMessage(jsonMessage);
 
-            Debug.Log("Session update message sent with input_audio_transcription settings.");
+            Debug.Log("Session update message sent with updated settings.");
         }
 
         /// <summary>

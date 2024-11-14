@@ -1,4 +1,4 @@
-﻿namespace UniRealtime
+﻿namespace UniRealtime.Response
 {
     /// <summary>
     /// OpenAI リアルタイム API のレスポンスタイプを表す Enum
