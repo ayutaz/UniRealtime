@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MikeSchweitzer.WebSocket;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using System.Net.WebSockets;
+
 #if UNIREALTIME_SUPPORT_UNITASK
 using Cysharp.Threading.Tasks;
+
+#else
+using System.Threading.Tasks;
 #endif
 
 namespace UniRealtime
@@ -19,57 +23,56 @@ namespace UniRealtime
     public class OpenAIRealtimeClient : IDisposable
     {
         /// <summary>
-        /// API Key
+        /// APIキー
         /// </summary>
         private readonly string _apiKey;
 
         /// <summary>
-        /// Model Name
+        /// モデル名
         /// </summary>
         private readonly string _modelName;
 
         /// <summary>
-        /// WebSocket Connection Class
+        /// WebSocket接続クラス
         /// </summary>
         private readonly WebSocketConnection _connection;
 
         /// <summary>
-        /// Connection Flag
+        /// 接続フラグ
         /// </summary>
         public bool IsConnected { get; private set; }
 
         /// <summary>
-        /// メッセージが受信されたときに発行されるイベント
+        /// メッセージ受信時に発行されるイベント
         /// </summary>
         public event Action<RealtimeResponse> OnMessageReceivedEvent;
 
         /// <summary>
-        /// Constructor
+        /// コンストラクタ
         /// </summary>
-        /// <param name="webSocketConnection"></param>
         /// <param name="apiKey"></param>
         /// <param name="modelName"></param>
-        public OpenAIRealtimeClient(WebSocketConnection webSocketConnection, string apiKey, string modelName = "gpt-4o-realtime-preview-2024-10-01")
+        public OpenAIRealtimeClient(string apiKey, string modelName = "gpt-4o-realtime-preview-2024-10-01")
         {
-            _connection = webSocketConnection;
             _apiKey = apiKey;
             _modelName = modelName;
 
-            webSocketConnection.MessageReceived += OnMessageReceived;
-            webSocketConnection.ErrorMessageReceived += OnErrorMessageReceived;
+            _connection = new WebSocketConnection();
+            _connection.MessageReceived += OnMessageReceived;
+            _connection.ErrorMessageReceived += OnErrorMessageReceived;
         }
 
         /// <summary>
-        ///  Realtime APIに接続
+        /// Realtime APIに接続
         /// </summary>
 #if UNIREALTIME_SUPPORT_UNITASK
         public async UniTask ConnectToRealtimeAPI(CancellationToken cancellationToken = default, string instructions = "あなたは優秀はアシスタントです。",
             Modalities[] modalities = null, string headerKey = "OpenAI-Beta",
-            string headerValue = "realtime=v1", int maxReceiveMbValue = 1024 * 1024 * 5, int maxSendBytes = 1024 * 1024 * 5)
+            string headerValue = "realtime=v1")
 #else
         public async Task ConnectToRealtimeAPI(CancellationToken cancellationToken = default, string instructions = "あなたは優秀はアシスタントです。",
             Modalities[] modalities = null, string headerKey = "OpenAI-Beta",
-            string headerValue = "realtime=v1", int maxReceiveMbValue = 1024 * 1024 * 5, int maxSendBytes = 1024 * 1024 * 5)
+            string headerValue = "realtime=v1")
 #endif
         {
             string url = $"wss://api.openai.com/v1/realtime?model={_modelName}";
@@ -81,23 +84,28 @@ namespace UniRealtime
                 { headerKey, headerValue }
             };
 
-            // 接続設定の作成
-            _connection.DesiredConfig = new WebSocketConfig
-            {
-                Url = url,
-                Headers = headers,
-                MaxReceiveBytes = maxReceiveMbValue,
-                MaxSendBytes = maxSendBytes
-            };
+            _connection.Headers = headers;
 
-            _connection.Connect();
+            // 接続
+            await _connection.ConnectAsync(url, cancellationToken);
 
             // 接続が確立されるまで待機
 #if UNIREALTIME_SUPPORT_UNITASK
-            await UniTask.WaitUntil(() => _connection.State == WebSocketState.Connected, cancellationToken: cancellationToken);
+            await UniTask.WaitUntil(() => _connection.State == WebSocketState.Open, cancellationToken: cancellationToken);
 #else
-            await UnityMainThreadContext.WaitUntilAsync(() => _connection.State == WebSocketState.Connected, cancellationToken);
+            await Task.Run(async () =>
+            {
+                while (_connection.State == WebSocketState.Connecting && !cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(100, cancellationToken);
+                }
+            }, cancellationToken);
 #endif
+            if (_connection.State != WebSocketState.Open)
+            {
+                throw new Exception("Failed to connect to Realtime API");
+            }
+
             Debug.Log("Connected to Realtime API");
 
             // 接続フラグを設定
@@ -110,7 +118,7 @@ namespace UniRealtime
             }
 
             // response.create メッセージを送信
-            SendResponseCreate(instructions, modalities);
+            await SendResponseCreate(instructions, modalities);
         }
 
         /// <summary>
@@ -118,7 +126,7 @@ namespace UniRealtime
         /// </summary>
         /// <param name="instructions">アシスタントへの指示</param>
         /// <param name="modalities">使用するモダリティ（例：Modalities.Text, Modalities.Audio）</param>
-        public void SendResponseCreate(string instructions, Modalities[] modalities)
+        public async Task SendResponseCreate(string instructions, Modalities[] modalities)
         {
             // Modalities enum の値を文字列に変換
             var modalitiesStrings = modalities.Select(m => m.ToString().ToLower()).ToArray();
@@ -134,15 +142,15 @@ namespace UniRealtime
             };
 
             string jsonMessage = JsonConvert.SerializeObject(responseCreateMessage);
-            _connection.AddOutgoingMessage(jsonMessage);
+            await _connection.SendAsync(jsonMessage);
 
             Debug.Log("Sent response.create message with instructions.");
         }
 
         /// <summary>
-        ///     セッションの更新を送信
+        /// セッションの更新を送信
         /// </summary>
-        public void SendSessionUpdate(string modelName = "whisper-1")
+        public async Task SendSessionUpdate(string modelName = "whisper-1")
         {
             var sessionUpdateMessage = new
             {
@@ -157,18 +165,18 @@ namespace UniRealtime
             };
 
             string jsonMessage = JsonConvert.SerializeObject(sessionUpdateMessage);
-            _connection.AddOutgoingMessage(jsonMessage);
+            await _connection.SendAsync(jsonMessage);
 
             Debug.Log("Session update message sent with input_audio_transcription settings.");
         }
 
         /// <summary>
-        /// Send Audio Data to Realtime API
+        /// Realtime APIに音声データを送信
         /// </summary>
         /// <param name="audioData"></param>
-        public void SendAudioData(float[] audioData)
+        public async Task SendAudioData(float[] audioData)
         {
-            if (_connection.State != WebSocketState.Connected)
+            if (_connection.State != WebSocketState.Open)
             {
                 // 接続が確立されていない場合は送信しない
                 return;
@@ -184,7 +192,7 @@ namespace UniRealtime
             };
 
             string jsonMessage = JsonConvert.SerializeObject(eventMessage);
-            _connection.AddOutgoingMessage(jsonMessage);
+            await _connection.SendAsync(jsonMessage);
         }
 
         /// <summary>
@@ -227,9 +235,8 @@ namespace UniRealtime
         /// <summary>
         /// メッセージを受信
         /// </summary>
-        /// <param name="connection"></param>
         /// <param name="message"></param>
-        private void OnMessageReceived(WebSocketConnection connection, WebSocketMessage message)
+        private void OnMessageReceived(string message)
         {
             // 非メインスレッドから呼び出される可能性があるため、メインスレッドで処理を行う
 #if UNIREALTIME_SUPPORT_UNITASK
@@ -242,11 +249,10 @@ namespace UniRealtime
         /// <summary>
         /// メッセージを処理
         /// </summary>
-        /// <param name="message"></param>
-        private void ProcessMessage(WebSocketMessage message)
+        private void ProcessMessage(string messageString)
         {
-            // メッセージの解析と RealtimeResponse オブジェクトの作成
-            RealtimeResponse response = ParseMessage(message);
+            // メッセージの解析とRealtimeResponseオブジェクトの作成
+            RealtimeResponse response = ParseMessage(messageString);
 
             if (response == null)
             {
@@ -261,13 +267,11 @@ namespace UniRealtime
         /// <summary>
         /// メッセージを解析
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private RealtimeResponse ParseMessage(WebSocketMessage message)
+        private RealtimeResponse ParseMessage(string messageString)
         {
             try
             {
-                JObject json = JObject.Parse(message.String);
+                JObject json = JObject.Parse(messageString);
                 string typeString = (string)json["type"];
                 ResponseType responseType = ParseResponseType(typeString);
 
@@ -377,9 +381,8 @@ namespace UniRealtime
         /// <summary>
         /// エラーメッセージを受信
         /// </summary>
-        /// <param name="connection"></param>
         /// <param name="errorMessage"></param>
-        private void OnErrorMessageReceived(WebSocketConnection connection, string errorMessage)
+        private void OnErrorMessageReceived(string errorMessage)
         {
             // エラーメッセージをメインスレッドでログ出力
 #if UNIREALTIME_SUPPORT_UNITASK
@@ -398,7 +401,7 @@ namespace UniRealtime
 
             _connection.MessageReceived -= OnMessageReceived;
             _connection.ErrorMessageReceived -= OnErrorMessageReceived;
-            _connection.Disconnect();
+            _connection.Dispose();
         }
     }
 }

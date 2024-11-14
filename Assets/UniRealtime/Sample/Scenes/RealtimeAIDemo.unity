@@ -792,7 +792,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1403341262}
   - component: {fileID: 1403341261}
-  - component: {fileID: 1403341260}
   - component: {fileID: 1403341263}
   m_Layer: 0
   m_Name: SampleClient
@@ -801,18 +800,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1403341260
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1403341259}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8969cf4d966774d589bb80b1dcfc2337, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1403341261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -825,11 +812,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d112f3434e6b4e3aa98bda5762cb06d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _apiKey: 
+  _apiKey: test
   responseText: {fileID: 1716933921}
   inputText: {fileID: 570215650}
   audioSource: {fileID: 1403341263}
-  webSocketConnection: {fileID: 1403341260}
 --- !u!4 &1403341262
 Transform:
   m_ObjectHideFlags: 0

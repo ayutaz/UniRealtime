@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Threading;
-using MikeSchweitzer.WebSocket;
 using TMPro;
 using UnityEngine;
 
@@ -55,19 +53,13 @@ namespace UniRealtime.Sample
         /// </summary>
         private CancellationTokenSource _cancellationTokenSource;
 
-        /// <summary>
-        /// WebSocketConnection
-        /// </summary>
-        [SerializeField] private WebSocketConnection webSocketConnection;
-
         private void Awake()
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            _openAIRealtimeClient = new OpenAIRealtimeClient(webSocketConnection, _apiKey);
+            _openAIRealtimeClient = new OpenAIRealtimeClient(_apiKey);
             _audioRecorder = new AudioRecorder();
             _openAIRealtimeClient.OnMessageReceivedEvent += HandleMessageReceived;
         }
-
 
         /// <summary>
         /// 開始処理
@@ -82,7 +74,7 @@ namespace UniRealtime.Sample
             await _openAIRealtimeClient.ConnectToRealtimeAPI(_cancellationTokenSource.Token);
 
             // 入力した音声の文字起こし情報も取得する場合
-            _openAIRealtimeClient.SendSessionUpdate();
+            await _openAIRealtimeClient.SendSessionUpdate();
         }
 
         /// <summary>
