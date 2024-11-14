@@ -825,9 +825,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d112f3434e6b4e3aa98bda5762cb06d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _apiKey: 
+  _apiKey: test
   responseText: {fileID: 1716933921}
   inputText: {fileID: 570215650}
+  _selectVoice: 6
   audioSource: {fileID: 1403341263}
   webSocketConnection: {fileID: 1403341260}
 --- !u!4 &1403341262
