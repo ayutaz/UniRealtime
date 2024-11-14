@@ -96,6 +96,9 @@ namespace UniRealtime.Sample
                 return;
             }
 
+#if UNITY_WEBGL
+            // WebGLのマイク入力の実装
+#else
             // マイクから音声データを取得して送信
             if (Microphone.IsRecording(_audioRecorder.Microphone))
             {
@@ -121,6 +124,7 @@ namespace UniRealtime.Sample
                     _openAIRealtimeClient.SendAudioData(samples);
                 }
             }
+#endif
         }
 
         /// <summary>

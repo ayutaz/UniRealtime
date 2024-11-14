@@ -7,6 +7,7 @@ namespace UniRealtime
     /// </summary>
     public class AudioRecorder
     {
+#if !UNITY_WEBGL
         /// <summary>
         /// Use Microphone name
         /// </summary>
@@ -72,5 +73,6 @@ namespace UniRealtime
         {
             UnityEngine.Microphone.End(Microphone);
         }
+#endif
     }
 }
