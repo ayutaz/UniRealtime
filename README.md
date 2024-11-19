@@ -11,24 +11,15 @@ UniRealtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統�
 
 <!-- TOC -->
 * [UniRealtime](#unirealtime)
-* [機能概要](#機能概要)
 * [サンプルプロジェクトのセットアップ](#サンプルプロジェクトのセットアップ)
-* [対応するOpenAIのAPI機能](#対応するopenaiのapi機能)
 * [ライブラリとしての使用方法](#ライブラリとしての使用方法)
   * [依存ライブラリのインストール](#依存ライブラリのインストール)
   * [Package Manager](#package-manager)
   * [Unity Package](#unity-package)
 * [動作環境](#動作環境)
-* [依存関係](#依存関係)
 * [サンプルの使用方法](#サンプルの使用方法)
 * [License](#license)
 <!-- TOC -->
-
-# 機能概要
-* 低遅延の音声対話: OpenAI Realtime APIを活用し、リアルタイムでキャラクターと音声対話が可能。
-* マルチモーダル対応: テキストおよび音声の双方向入力/出力に対応。
-* 音声合成: 自然で感情豊かな音声応答を提供。
-* WebSocket通信: WebSocketによる高効率かつ低遅延な双方向通信を実現。
 
 # サンプルプロジェクトのセットアップ
 * 以下は、Unityを使ったプロジェクトでOpenAIのRealtime APIを利用するためのサンプルシーンのセットアップ手順です。
@@ -42,14 +33,13 @@ UniRealtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統�
 
 ![](Docs/sampleSceneImage.png)
 
-# 対応するOpenAIのAPI機能
-* Text & Audio Input/Output: テキストと音声の入出力に対応し、インタラクティブな音声会話を実現。
-* Function Calls: AIモデルによるリアルタイムの関数実行機能。
-* 自然な音声出力: 語調や自然な音声のインタラクションが可能、低遅延でシームレスな対話を提供。
-
 # ライブラリとしての使用方法
 
 ## 依存ライブラリのインストール
+
+1. [unity-websocket](https://github.com/mikerochip/unity-websocket)をインストールします
+
+2. 任意で[UniTask](https://github.com/Cysharp/UniTask)をインストールします。こちらをしようしない場合は，内部処理はTaskを使用します。
 
 ## Package Manager
 1. Package Managerを開きます。
@@ -64,11 +54,6 @@ UniRealtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統�
 # 動作環境
 * Unity: 2021.3.14f1 以降
 * OpenAI Realtime API: 最新のAPIバージョンに対応
-* WebSocket: 高速WebSocket通信に対応
-
-# 依存関係
-* [UniTask](https://github.com/Cysharp/UniTask)
-* [unity-websocket](https://github.com/mikerochip/unity-websocket)
 
 # サンプルの使用方法
 * サンプルには、音声入力からAI応答、さらにリアルタイムでの音声合成までを行うシンプルなキャラクター対話システムが含まれています。以下のステップで利用可能です。
