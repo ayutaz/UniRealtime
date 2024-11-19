@@ -52,7 +52,7 @@ By running the project, it will operate as shown in the image below.
 3. Import the downloaded Unity package into your project.
 
 # Operating Environment
-* Unity: 2021.3.14f1 or later
+* Unity: 2022.3.x or later
 * OpenAI Realtime API: Compatible with the latest API version
 
 # How to Use the Sample

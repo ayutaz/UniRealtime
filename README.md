@@ -52,7 +52,7 @@ UniRealtimeは、OpenAIのRealtime APIをUnityプロジェクトに簡単に統�
 3. ダウンロードしたUnityパッケージをプロジェクトにインポートします。
 
 # 動作環境
-* Unity: 2021.3.14f1 以降
+* Unity: 2022.3.x 以降
 * OpenAI Realtime API: 最新のAPIバージョンに対応
 
 # サンプルの使用方法
