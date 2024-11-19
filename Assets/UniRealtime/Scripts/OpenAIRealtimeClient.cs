@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
 using MikeSchweitzer.WebSocket;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UniRealtime.OpenAI.Request;
+using UniRealtime.Response;
 using UnityEngine;
+#if UNIREALTIME_SUPPORT_UNITASK
+using Cysharp.Threading.Tasks;
+#endif
 
 namespace UniRealtime
 {
@@ -59,9 +64,15 @@ namespace UniRealtime
         /// <summary>
         ///  Realtime APIに接続
         /// </summary>
+#if UNIREALTIME_SUPPORT_UNITASK
         public async UniTask ConnectToRealtimeAPI(CancellationToken cancellationToken = default, string instructions = "あなたは優秀はアシスタントです。",
             Modalities[] modalities = null, string headerKey = "OpenAI-Beta",
             string headerValue = "realtime=v1", int maxReceiveMbValue = 1024 * 1024 * 5, int maxSendBytes = 1024 * 1024 * 5)
+#else
+        public async Task ConnectToRealtimeAPI(CancellationToken cancellationToken = default, string instructions = "あなたは優秀はアシスタントです。",
+            Modalities[] modalities = null, string headerKey = "OpenAI-Beta",
+            string headerValue = "realtime=v1", int maxReceiveMbValue = 1024 * 1024 * 5, int maxSendBytes = 1024 * 1024 * 5)
+#endif
         {
             string url = $"wss://api.openai.com/v1/realtime?model={_modelName}";
 
@@ -84,8 +95,11 @@ namespace UniRealtime
             _connection.Connect();
 
             // 接続が確立されるまで待機
+#if UNIREALTIME_SUPPORT_UNITASK
             await UniTask.WaitUntil(() => _connection.State == WebSocketState.Connected, cancellationToken: cancellationToken);
-
+#else
+            await UnityMainThreadContext.WaitUntilAsync(() => _connection.State == WebSocketState.Connected, cancellationToken);
+#endif
             Debug.Log("Connected to Realtime API");
 
             // 接続フラグを設定
@@ -130,24 +144,12 @@ namespace UniRealtime
         /// <summary>
         ///     セッションの更新を送信
         /// </summary>
-        public void SendSessionUpdate(string modelName = "whisper-1")
+        public void SendSessionUpdate(SessionUpdateMessage sessionUpdateMessage)
         {
-            var sessionUpdateMessage = new
-            {
-                type = "session.update",
-                session = new
-                {
-                    input_audio_transcription = new
-                    {
-                        model = modelName
-                    }
-                }
-            };
-
             string jsonMessage = JsonConvert.SerializeObject(sessionUpdateMessage);
             _connection.AddOutgoingMessage(jsonMessage);
 
-            Debug.Log("Session update message sent with input_audio_transcription settings.");
+            Debug.Log("Session update message sent with updated settings.");
         }
 
         /// <summary>
@@ -220,7 +222,11 @@ namespace UniRealtime
         private void OnMessageReceived(WebSocketConnection connection, WebSocketMessage message)
         {
             // 非メインスレッドから呼び出される可能性があるため、メインスレッドで処理を行う
+#if UNIREALTIME_SUPPORT_UNITASK
             UniTask.Post(() => ProcessMessage(message));
+#else
+            UnityMainThreadContext.Post(() => ProcessMessage(message));
+#endif
         }
 
         /// <summary>
@@ -366,7 +372,11 @@ namespace UniRealtime
         private void OnErrorMessageReceived(WebSocketConnection connection, string errorMessage)
         {
             // エラーメッセージをメインスレッドでログ出力
+#if UNIREALTIME_SUPPORT_UNITASK
             UniTask.Post(() => Debug.LogError($"WebSocket Error: {errorMessage}"));
+#else
+            UnityMainThreadContext.Post(() => Debug.LogError($"WebSocket Error: {errorMessage}"));
+#endif
         }
 
         /// <summary>
