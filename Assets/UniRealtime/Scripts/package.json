@@ -1,7 +1,7 @@
 ﻿{
   "name": "jp.ayutaz.uni-realtime",
   "displayName": "UniRealtime",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "unity": "2023.3",
   "description": "OpenAI's realtime api for Unity",
   "keywords": [
